@@ -8,11 +8,15 @@ def name_regex(value):
         raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
 class MovieSerializer(serializers.ModelSerializer):
+    len_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
         fields = '__all__'
         # exclude = ['active']
+    
+    def get_len_title(self, obj):
+        return len(obj.title)
     
     def validate(self, data):
         if data['title'] == data['description']:
