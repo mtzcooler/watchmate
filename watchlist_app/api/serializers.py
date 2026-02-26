@@ -7,23 +7,39 @@ def name_regex(value):
     if not re.match(regex, value):
         raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
-class MovieSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(validators=[name_regex])
-    description = serializers.CharField()
-    active = serializers.BooleanField()
+class MovieSerializer(serializers.ModelSerializer):
 
-    def create(self, validated_data):
-        return Movie.objects.create(**validated_data)
-    
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
-        instance.active = validated_data.get('active', instance.active)
-        instance.save()
-        return instance
+    class Meta:
+        model = Movie
+        fields = '__all__'
+        # exclude = ['active']
     
     def validate(self, data):
         if data['title'] == data['description']:
             raise serializers.ValidationError("Title and Description must not be the same.")
         return data
+    
+    def validate_title(self, value):
+        name_regex(value)
+        return value
+
+# class MovieSerializer(serializers.Serializer):
+#     id = serializers.IntegerField(read_only=True)
+#     title = serializers.CharField(validators=[name_regex])
+#     description = serializers.CharField()
+#     active = serializers.BooleanField()
+
+#     def create(self, validated_data):
+#         return Movie.objects.create(**validated_data)
+    
+#     def update(self, instance, validated_data):
+#         instance.title = validated_data.get('title', instance.title)
+#         instance.description = validated_data.get('description', instance.description)
+#         instance.active = validated_data.get('active', instance.active)
+#         instance.save()
+#         return instance
+    
+#     def validate(self, data):
+#         if data['title'] == data['description']:
+#             raise serializers.ValidationError("Title and Description must not be the same.")
+#         return data
