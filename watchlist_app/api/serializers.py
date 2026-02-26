@@ -1,12 +1,18 @@
 from rest_framework import serializers
 from watchlist_app.models import Movie
+import re
+
+def name_regex(value):
+    regex = r'^[a-zA-Z0-9\-\:\s]+$'
+    if not re.match(regex, value):
+        raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
 class MovieSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField()
+    title = serializers.CharField(validators=[name_regex])
     description = serializers.CharField()
     active = serializers.BooleanField()
-    
+
     def create(self, validated_data):
         return Movie.objects.create(**validated_data)
     
@@ -16,3 +22,8 @@ class MovieSerializer(serializers.Serializer):
         instance.active = validated_data.get('active', instance.active)
         instance.save()
         return instance
+    
+    def validate(self, data):
+        if data['title'] == data['description']:
+            raise serializers.ValidationError("Title and Description must not be the same.")
+        return data
