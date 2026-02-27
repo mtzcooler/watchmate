@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist_app.models import Movie
+from watchlist_app.models import Media, Platform
 import re
 
 def name_regex(value):
@@ -7,11 +7,12 @@ def name_regex(value):
     if not re.match(regex, value):
         raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
-class MovieSerializer(serializers.ModelSerializer):
+
+class MediaSerializer(serializers.ModelSerializer):
     len_title = serializers.SerializerMethodField()
 
     class Meta:
-        model = Movie
+        model = Media
         fields = '__all__'
         # exclude = ['active']
     
@@ -26,6 +27,13 @@ class MovieSerializer(serializers.ModelSerializer):
     def validate_title(self, value):
         name_regex(value)
         return value
+
+
+class PlatformSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Platform
+        fields = '__all__'
+
 
 # class MovieSerializer(serializers.Serializer):
 #     id = serializers.IntegerField(read_only=True)

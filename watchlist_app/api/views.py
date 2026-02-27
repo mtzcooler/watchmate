@@ -2,51 +2,98 @@ from rest_framework.response import Response
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
-from watchlist_app.models import Movie
-from watchlist_app.api.serializers import MovieSerializer
+from watchlist_app.models import Media, Platform
+from watchlist_app.api.serializers import MediaSerializer, PlatformSerializer
 
-class MovieList(APIView):
+class WatchList(APIView):
     def get(self, request):
-        movies = Movie.objects.all()
-        serializer = MovieSerializer(movies, many=True)
+        media = Media.objects.all()
+        serializer = MediaSerializer(media, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = MovieSerializer(data=request.data)
+        serializer = MediaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class MovieDetail(APIView):
+
+class WatchDetail(APIView):
     def get_object(self, pk):
         try:
-            return Movie.objects.get(pk=pk)
-        except Movie.DoesNotExist:
+            return Media.objects.get(pk=pk)
+        except Media.DoesNotExist:
             return None
 
     def get(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
-            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MovieSerializer(movie)
+        media = self.get_object(pk)
+        if media is None:
+            return Response({'error': 'Media not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = MediaSerializer(media)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
-            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MovieSerializer(movie, data=request.data)
+        media = self.get_object(pk)
+        if media is None:
+            return Response({'error': 'Media not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = MediaSerializer(media, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        movie = self.get_object(pk)
-        if movie is None:
-            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
-        movie.delete()
+        media = self.get_object(pk)
+        if media is None:
+            return Response({'error': 'Media not found'}, status=status.HTTP_404_NOT_FOUND)
+        media.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PlatformList(APIView):
+    def get(self, request):
+        platforms = Platform.objects.all()
+        serializer = PlatformSerializer(platforms, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = PlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlatformDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Platform.objects.get(pk=pk)
+        except Platform.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PlatformSerializer(platform)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PlatformSerializer(platform, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        platform = self.get_object(pk)
+        if platform is None:
+            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+        platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
