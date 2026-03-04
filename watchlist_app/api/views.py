@@ -54,7 +54,8 @@ class WatchDetail(APIView):
 class PlatformList(APIView):
     def get(self, request):
         platforms = Platform.objects.all()
-        serializer = PlatformSerializer(platforms, many=True)
+        serializer = PlatformSerializer(platforms, many=True,
+                                        context={'request': request})
         return Response(serializer.data)
     
     def post(self, request):

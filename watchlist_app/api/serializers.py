@@ -30,7 +30,9 @@ class MediaSerializer(serializers.ModelSerializer):
 
 
 class PlatformSerializer(serializers.ModelSerializer):
-    media = MediaSerializer(many=True, read_only=True)
+    # media = MediaSerializer(many=True, read_only=True)
+    media = serializers.HyperlinkedRelatedField(many=True, read_only=True,
+                                                view_name='media-detail')
 
     class Meta:
         model = Platform
