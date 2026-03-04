@@ -9,7 +9,7 @@ def name_regex(value):
 
 
 class MediaSerializer(serializers.ModelSerializer):
-    len_title = serializers.SerializerMethodField()
+    # len_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Media
@@ -30,6 +30,8 @@ class MediaSerializer(serializers.ModelSerializer):
 
 
 class PlatformSerializer(serializers.ModelSerializer):
+    media = MediaSerializer(many=True, read_only=True)
+
     class Meta:
         model = Platform
         fields = '__all__'
