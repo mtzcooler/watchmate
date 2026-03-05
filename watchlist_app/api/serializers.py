@@ -8,6 +8,12 @@ def name_regex(value):
         raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
 
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        exclude = ['media']
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review

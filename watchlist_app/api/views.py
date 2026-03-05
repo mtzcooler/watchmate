@@ -5,12 +5,23 @@ from rest_framework import status, generics
 
 from watchlist_app.models import Media, Platform, Review
 from watchlist_app.api.serializers import (MediaSerializer, PlatformSerializer,
-                                           ReviewSerializer)
+                                           ReviewSerializer, ReviewCreateSerializer)
+
+class ReviewCreate(generics.CreateAPIView):
+    serializer_class = ReviewCreateSerializer
+
+    def perform_create(self, serializer):
+        media_id = self.kwargs['pk']
+        media = Media.objects.get(pk=media_id)
+        serializer.save(media=media)
 
 
-class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
+    
+    def get_queryset(self):
+        media_id = self.kwargs['pk']
+        return Review.objects.filter(media=media_id)
 
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
