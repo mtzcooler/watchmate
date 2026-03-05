@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist_app.models import Media, Platform
+from watchlist_app.models import Media, Platform, Review
 import re
 
 def name_regex(value):
@@ -8,8 +8,15 @@ def name_regex(value):
         raise serializers.ValidationError("Title must contain only letters, numbers, dashes, colons and spaces.")
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
 class MediaSerializer(serializers.ModelSerializer):
     # len_title = serializers.SerializerMethodField()
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Media

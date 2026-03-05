@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Platform(models.Model):
     name = models.CharField(max_length=50)
@@ -7,6 +8,7 @@ class Platform(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Media(models.Model):
     title = models.CharField(max_length=50)
@@ -18,3 +20,18 @@ class Media(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Review(models.Model):
+    rating = models.PositiveIntegerField(validators=[
+        MinValueValidator(1), MaxValueValidator(5)
+        ])
+    description = models.TextField(max_length=200, null=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+    media = models.ForeignKey(Media, on_delete=models.CASCADE,
+                              related_name='reviews')
+
+    def __str__(self):
+        return self.media.title + " - " + str(self.rating) + " stars"
