@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
 
 from watchlist_app.models import Media, Platform, Review
 from watchlist_app.api.serializers import (MediaSerializer, PlatformSerializer,
@@ -75,51 +75,55 @@ class WatchDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class PlatformList(APIView):
-    def get(self, request):
-        platforms = Platform.objects.all()
-        serializer = PlatformSerializer(platforms, many=True,
-                                        context={'request': request})
-        return Response(serializer.data)
+class PlatformView(viewsets.ModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = PlatformSerializer
+
+# class PlatformList(APIView):
+#     def get(self, request):
+#         platforms = Platform.objects.all()
+#         serializer = PlatformSerializer(platforms, many=True,
+#                                         context={'request': request})
+#         return Response(serializer.data)
     
-    def post(self, request):
-        serializer = PlatformSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         serializer = PlatformSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PlatformDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return Platform.objects.get(pk=pk)
-        except Platform.DoesNotExist:
-            return None
+# class PlatformDetail(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return Platform.objects.get(pk=pk)
+#         except Platform.DoesNotExist:
+#             return None
 
-    def get(self, request, pk):
-        platform = self.get_object(pk)
-        if platform is None:
-            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = PlatformSerializer(platform)
-        return Response(serializer.data)
+#     def get(self, request, pk):
+#         platform = self.get_object(pk)
+#         if platform is None:
+#             return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+#         serializer = PlatformSerializer(platform)
+#         return Response(serializer.data)
     
-    def put(self, request, pk):
-        platform = self.get_object(pk)
-        if platform is None:
-            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = PlatformSerializer(platform, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, pk):
+#         platform = self.get_object(pk)
+#         if platform is None:
+#             return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+#         serializer = PlatformSerializer(platform, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
-        platform = self.get_object(pk)
-        if platform is None:
-            return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
-        platform.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk):
+#         platform = self.get_object(pk)
+#         if platform is None:
+#             return Response({'error': 'Platform not found'}, status=status.HTTP_404_NOT_FOUND)
+#         platform.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # @api_view(['GET', 'POST'])
